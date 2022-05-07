@@ -29,7 +29,7 @@ public class PersonRepositoryImpl implements PersonRepository {
     @Override
     public Optional<Person> findById(PersonId id) {
         return personDao
-                .findById(id.getId())
+                .findByPersonId(id.getId())
                 .map(personMapper::toModel);
     }
 

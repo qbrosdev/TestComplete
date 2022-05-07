@@ -30,7 +30,7 @@ public class PersonController {
 
     @GetMapping("{id}")
     public Person getPersonById(@Valid PersonId personId) {
-
+        log.debug("Request for {}", personId);
         return personService.getById(personId);
     }
 

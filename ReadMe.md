@@ -7,3 +7,5 @@ This project represents different types of test support that we can have in Spri
 - Wide integration testing (Component testing) via @SpringBootTest
 
 > Contract testing will also be added.
+>
+> 

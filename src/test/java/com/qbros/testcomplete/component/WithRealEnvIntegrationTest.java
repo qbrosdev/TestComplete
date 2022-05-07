@@ -1,6 +1,7 @@
 package com.qbros.testcomplete.component;
 
 import com.qbros.testcomplete.persistence.PersonDao;
+import com.qbros.testcomplete.persistence.PersonEntity;
 import com.qbros.testcomplete.service.models.GENDER;
 import com.qbros.testcomplete.service.models.Person;
 import com.qbros.testcomplete.service.models.PersonId;
@@ -29,7 +30,6 @@ public class WithRealEnvIntegrationTest {
     static MockWebServer mockWebServer;
     @Autowired
     TestRestTemplate restTemplate;
-
     @Autowired
     PersonDao personDao;
     @Value("${local.server.port}")
@@ -52,7 +52,7 @@ public class WithRealEnvIntegrationTest {
     }
 
     @Test
-    void createPerson() {
+    void createPersonTest() {
 
         HttpEntity<Person> request = new HttpEntity<>(Person.aPerson()
                 .withPersonId(new PersonId(123L))
@@ -71,6 +71,33 @@ public class WithRealEnvIntegrationTest {
 
         assertThat(resp.getStatusCode()).isEqualTo(HttpStatus.CREATED);
         assertThat(resp.getHeaders().getLocation()).isEqualTo(URI.create("http://localhost:" + this.port + "/persons/" + 123));
+    }
+
+    @Test
+    void findPersonTest() {
+
+        PersonEntity personEntity = PersonEntity.aPersonEntity()
+                .withPersonId(123L)
+                .withAge(26)
+                .withName("dfdf")
+                .withGender(GENDER.MALE)
+                .build();
+
+        Person expected = Person.aPerson()
+                .withPersonId(new PersonId(123L))
+                .withAge(26)
+                .withName("dfdf")
+                .withGender(GENDER.MALE)
+                .build();
+
+        personDao.save(personEntity);
+
+        ResponseEntity<Person> response = restTemplate
+                .withBasicAuth("user1", "pass")
+                .getForEntity("/persons/123", Person.class);
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(response.getBody()).isEqualTo(expected);
     }
 
     private String getJson(String path) {
